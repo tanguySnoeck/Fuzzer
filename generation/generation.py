@@ -84,6 +84,7 @@ def main():
         os.remove(tempImageFileName) #if last file failed this file will not exist
     except:
         pass
+    print("Kind of errors and their associated file numbers:")
     print(main.kindOfError)
       
 def handleKnownErrors():

@@ -119,7 +119,7 @@ def getRandomPixels(image):
     return pixels
 
 def testImage(image):
-    pipes = subprocess.Popen(['./converter', image , 'outputImage'], stderr=subprocess.PIPE)
+    pipes = subprocess.Popen(['../converter', image , 'outputImage'], stderr=subprocess.PIPE)
     std_err = pipes.communicate()
     
     if pipes.returncode != 0 and std_err[1].decode("utf-8").find('crashed'):

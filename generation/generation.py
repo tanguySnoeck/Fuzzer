@@ -13,8 +13,8 @@ TEST_AUTHOR_NAMES = [ i*256 for i in range(4250, 4450) ] #the *256 is there just
 TEST_WIDHTS = list(range(0, 200))
 TEST_HEIGHTS = list(range(0, 200))
 TEST_NUM_COLOURS = list(range(0, 257))
-#add the likelyhood of another colour added
-#add likelyhood of a missing pixel or one too much
+#TODO add the likelyhood of another colour added
+#TODO add likelyhood of a missing pixel or one too much
 
 class Image:
 
@@ -105,7 +105,7 @@ def handleKnownErrors():
         main.kindOfError['tooManyColours'] += [main.outputFileNb]
     elif main.image.authorName == 4352*256 :
         main.kindOfError['authorContains00'] += [main.outputFileNb]
-    #add other cases for the likelyhood things
+    #TODO add other cases for the likelyhood things
 
 def chooseRandomColour(numOfColour):
     #This function creates a list of colours

@@ -8,8 +8,8 @@ from random import randint
 from shutil import copyfile
 
 #These values can be changed if needed to make the explored space smaller or larger.
-TEST_VERSIONS = list(range(0, 102))
-TEST_AUTHOR_NAMES = [ i*256 for i in range(4250, 4450) ] #the *256 is there just to add 00 at the end
+TEST_VERSIONS = list(range(0, 102)) #number higher than 100 do not make the program crash, it just exits in a predictable way
+TEST_AUTHOR_NAMES = [ i*256 for i in range(4300, 4400) ] #the *256 is there just to add 00 at the end
 TEST_WIDHTS = list(range(0, 200))
 TEST_HEIGHTS = list(range(0, 200))
 TEST_NUM_COLOURS = list(range(0, 257))
@@ -25,8 +25,10 @@ class Image:
         self.width = 0
         self.height = 0
         self.numColours = 0
+        self.realNumColour = True
         self.colourTable = []
         self.pixels = []
+        self.realNumPixel = True
 
     def randomImageParameters(self):
         self.version = TEST_VERSIONS[randint(0, len(TEST_VERSIONS))-1]
@@ -34,6 +36,10 @@ class Image:
         self.width = TEST_WIDHTS[randint(0, len(TEST_WIDHTS))-1]
         self.height = TEST_HEIGHTS[randint(0, len(TEST_HEIGHTS))-1]
         self.numColours = TEST_NUM_COLOURS[randint(0, len(TEST_NUM_COLOURS))-1]
+        if randint(0, 100) == 50 and self.numColours > 1:
+            self.realNumColour = False
+        if randint(0, 100) == 1 and (self.width > 1 and self.height > 1):
+            self.realNumPixel = False
 
     def setColourTable(self, c):
         self.colourTable = c
@@ -56,13 +62,23 @@ class Image:
             #add the height
             saveFile.write(self.height.to_bytes(4, 'little'))
             #add the numof colours
-            saveFile.write(self.numColours.to_bytes(4, 'little'))
+            if self.realNumColour:
+                saveFile.write(self.numColours.to_bytes(4, 'little'))
+            else:
+                saveFile.write((self.numColours - 1).to_bytes(4, 'little'))
             #add the colour table
             for colour in self.colourTable:
                 saveFile.write(colour)
             #add the pixels
-            for pixle in self.pixels:
-                saveFile.write(pixel.to_bytes(2, 'little'))
+            if self.realNumPixel:
+                for pixel in self.pixels:
+                    saveFile.write(pixel.to_bytes(2, 'little'))
+            else:
+                for pixel in self.pixels[0:len(self.pixels)-1]:
+                    saveFile.write(pixel.to_bytes(2, 'little'))
+
+    def pictureToString(self):
+        return "v" + str(self.version) + "_a" + hex(self.authorName) + "_w" + str(self.width) + "_h" + str(self.height) + "_nc" + str(self.numColours) + "_rnc" + str(self.realNumColour) + "_rnp" + str(self.realNumPixel)
 
 
 def main():
@@ -73,7 +89,6 @@ def main():
     numberOfTests = int(sys.argv[1])
     tempImageFileName = "temp.img"
     main.outputFileNb = 0
-    main.kindOfError = {'width':[], 'height':[], 'version':[], 'zeroColour':[], 'tooManyColours':[], 'authorContains00':[]}
     for x in range(numberOfTests):
         print("Test n°",str(x),sep='',end="\r",flush=True)
         #creating a random image
@@ -81,31 +96,13 @@ def main():
         main.image.randomImageParameters()
         main.image.colourTable = chooseRandomColour(main.image.numColours)
         main.image.pixles = getRandomPixels(main.image)
-        #This is done to indicate which files to look at, once files that do not work have been found
-        handleKnownErrors()
         main.image.savePicture(tempImageFileName)
-        testImage(tempImageFileName)
+        testImage(tempImageFileName, main.image.pictureToString())
     try:
         os.remove(tempImageFileName) #if last file failed this file will not exist
     except:
         pass
-    print("Kind of errors and their associated file numbers:")
-    print(main.kindOfError)
-      
-def handleKnownErrors():
-    if main.image.width == 0 :
-        main.kindOfError['width'] += [main.outputFileNb]
-    elif main.image.height == 0 :
-        main.kindOfError['height'] += [main.outputFileNb]
-    elif main.image.version > 100 :
-        main.kindOfError['version'] += [main.outputFileNb]
-    elif main.image.numColours <= 0 :
-        main.kindOfError['zeroColour'] += [main.outputFileNb]
-    elif main.image.numColours > 255 :
-        main.kindOfError['tooManyColours'] += [main.outputFileNb]
-    elif main.image.authorName == 4352*256 :
-        main.kindOfError['authorContains00'] += [main.outputFileNb]
-    #TODO add other cases for the likelyhood things
+    print("\n"+"number of crashed images: " + str(main.outputFileNb))
 
 def chooseRandomColour(numOfColour):
     #This function creates a list of colours
@@ -127,15 +124,14 @@ def getRandomPixels(image):
                 pixels += [line]
     return pixels
 
-def testImage(image):
+def testImage(image, crashedFileName):
     # testing the file using the converter tool 
     pipes = subprocess.Popen(['../converter', image , 'outputImage'], stderr=subprocess.PIPE)
     std_err = pipes.communicate()
     # if the program crashes
     if pipes.returncode != 0 and std_err[1].decode("utf-8").find('crashed'):
-        os.rename(image, "./crashingImages/testinput" + str(main.outputFileNb) + ".img")
+        os.rename(image, "./crashingImages/" + crashedFileName + ".img")
         main.outputFileNb += 1
-        
 
 if __name__ == "__main__":
     main()

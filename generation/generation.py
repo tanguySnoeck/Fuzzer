@@ -56,26 +56,28 @@ class Image:
             #add the version   
             saveFile.write(self.version.to_bytes(2, 'little'))
             #add the author name
-            saveFile.write(self.authorName.to_bytes(3, 'big'))
+            saveFile.write(self.authorName.to_bytes(3, 'little'))
+            saveFile.write((0).to_bytes(1, 'little'))
             #add the width
             saveFile.write(self.width.to_bytes(4, 'little'))
             #add the height
             saveFile.write(self.height.to_bytes(4, 'little'))
             #add the numof colours
-            if self.realNumColour:
-                saveFile.write(self.numColours.to_bytes(4, 'little'))
-            else:
-                saveFile.write((self.numColours - 1).to_bytes(4, 'little'))
+            #if self.realNumColour:
+            saveFile.write(self.numColours.to_bytes(2, 'little'))
+            #else:
+            #    saveFile.write((self.numColours - 1).to_bytes(4, 'little'))
             #add the colour table
-            for colour in self.colourTable:
-                saveFile.write(colour)
+            for colour in range(self.numColours):
+                saveFile.write(self.colourTable[colour].to_bytes(4, 'little'))
             #add the pixels
-            if self.realNumPixel:
-                for pixel in self.pixels:
-                    saveFile.write(pixel.to_bytes(2, 'little'))
-            else:
-                for pixel in self.pixels[0:len(self.pixels)-1]:
-                    saveFile.write(pixel.to_bytes(2, 'little'))
+            #if self.realNumPixel:
+            #    for pixel in self.pixels:
+            saveFile.write(pixel.to_bytes(2, 'little'))
+            #else:
+            #    for pixel in self.pixels[0:len(self.pixels)-1]:
+            #        saveFile.write(pixel.to_bytes(2, 'little'))
+
 
     def pictureToString(self):
         return "v" + str(self.version) + "_a" + hex(self.authorName) + "_w" + str(self.width) + "_h" + str(self.height) + "_nc" + str(self.numColours) + "_rnc" + str(self.realNumColour) + "_rnp" + str(self.realNumPixel)
@@ -94,9 +96,11 @@ def main():
         #creating a random image
         main.image = Image()
         main.image.randomImageParameters()
-        main.image.colourTable = chooseRandomColour(main.image.numColours)
-        main.image.pixles = getRandomPixels(main.image)
+        main.image.colourTable = chooseRandomColour(100)
+        main.image.setPixels(getRandomPixels(main.image))
+        #print(main.image.pixels)
         main.image.savePicture(tempImageFileName)
+        #main.image.savePicture(main.image.pictureToString())
         testImage(tempImageFileName, main.image.pictureToString())
     try:
         os.remove(tempImageFileName) #if last file failed this file will not exist
@@ -109,7 +113,7 @@ def chooseRandomColour(numOfColour):
     allColours = []
     if (numOfColour not in [-1, 0]):
         for n in range(numOfColour):
-            allColours += [randint(0, 2147483647).to_bytes(4, 'little')]
+            allColours += [randint(0, 2147483647)]
     return allColours
 
 def getRandomPixels(image):
@@ -118,10 +122,9 @@ def getRandomPixels(image):
     if (len(image.colourTable) > 0):
         if (image.width not in [-1, 0]) and (image.height not in [-1, 0]):
             for w in range(image.width):
-                line = []
                 for h in range(image.height):
-                    line += [randint(0, len(image.colourTable)-1)]
-                pixels += [line]
+                    pixels += [randint(0, len(image.colourTable)-1)]
+    #print(pixels)
     return pixels
 
 def testImage(image, crashedFileName):

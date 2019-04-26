@@ -100,7 +100,7 @@ class Image:
             #add the pixels
             #if self.realNumPixel:
             for h in range(self.height-1):
-                for p in [hex(pixel) for pixel in self.pixels[h:h+self.width]]:
+                for p in [hex(pixel) for pixel in self.pixels[h*self.width:h*(self.width)+self.width]]:
                     saveFile.write(p[2:] + " " )
                 saveFile.write("\n")
 

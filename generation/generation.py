@@ -48,7 +48,7 @@ class Image:
     def setPixels(self, p):
         self.pixels = p
     
-    def savePicture(self, fileName):
+   def savePicture(self, fileName):
         #make the file
         with open(fileName, 'w+b') as saveFile:
             #add the beggining thing
@@ -68,8 +68,8 @@ class Image:
             #else:
             #    saveFile.write((self.numColours - 1).to_bytes(4, 'little'))
             #add the colour table
-            for colour in range(self.numColours):
-                saveFile.write(self.colourTable[colour].to_bytes(4, 'little'))
+            for colour in self.colourTable:
+                saveFile.write(colour.to_bytes(4, 'little'))
             #add the pixels
             #if self.realNumPixel:
             for pixel in self.pixels:
@@ -77,6 +77,32 @@ class Image:
             #else:
             #    for pixel in self.pixels[0:len(self.pixels)-1]:
             #        saveFile.write(pixel.to_bytes(2, 'little'))
+
+    def saveHexPicture(self, fileName):
+        with open(fileName, 'w') as saveFile:
+            saveFile.write("ab cd\n")
+            #add the version   
+            saveFile.write(hex(self.version)[2:]+"\n")
+            #add the author name
+            saveFile.write(hex(self.authorName)[2:] + "00" +"\n")
+            #add the width
+            saveFile.write(hex(self.width)[2:]+"\n")
+            #add the height
+            saveFile.write(hex(self.height)[2:]+"\n")
+            #add the numof colours
+            #if self.realNumColour:
+            saveFile.write(hex(self.numColours)[2:]+"\n")
+            #else:
+            #    saveFile.write((self.numColours - 1).to_bytes(4, 'little'))
+            #add the colour table
+            for colour in self.colourTable:
+                saveFile.write(hex(colour)[2:]+"\n")
+            #add the pixels
+            #if self.realNumPixel:
+            for h in range(self.height-1):
+                for p in [hex(pixel) for pixel in self.pixels[h:h+self.width]]:
+                    saveFile.write(p[2:] + " " )
+                saveFile.write("\n")
 
 
     def pictureToString(self):
@@ -134,6 +160,7 @@ def testImage(image, crashedFileName):
     # if the program crashes
     if pipes.returncode != 0 and std_err[1].decode("utf-8").find('crashed'):
         os.rename(image, "./crashingImages/" + crashedFileName + ".img")
+        main.image.saveHexPicture("./crashingTextFiles/" + crashedFileName + ".txt")
         main.outputFileNb += 1
 
 if __name__ == "__main__":

@@ -72,8 +72,8 @@ class Image:
                 saveFile.write(self.colourTable[colour].to_bytes(4, 'little'))
             #add the pixels
             #if self.realNumPixel:
-            #    for pixel in self.pixels:
-            saveFile.write(pixel.to_bytes(2, 'little'))
+            for pixel in self.pixels:
+                saveFile.write(pixel.to_bytes(2, 'little'))
             #else:
             #    for pixel in self.pixels[0:len(self.pixels)-1]:
             #        saveFile.write(pixel.to_bytes(2, 'little'))

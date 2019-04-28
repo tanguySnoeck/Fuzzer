@@ -61,6 +61,7 @@ def testImage(image):
 
         # if the program crashes
         if (pipes.returncode != 0 and std_err[1].decode("utf-8").find('crashed')):
+            print("\n \n FOUND A BUG \n"!!)
             os.rename(image, "./" + CRASHING_IMAGES_FOLDER + "/testinput" + str(main.outputFileNb) + ".img")
             main.outputFileNb += 1
             main.hasCrashed = True

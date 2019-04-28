@@ -56,6 +56,7 @@ def testImage(image):
     try:
         # testing the file using the converter tool 
         pipes = subprocess.Popen(['../converter', image, 'outputImage'], stderr=subprocess.PIPE)
+        #pipes = subprocess.Popen(['../converter_static', image, 'outputImage'], stderr=subprocess.PIPE)
         std_err = pipes.communicate()
 
         # if the program crashes

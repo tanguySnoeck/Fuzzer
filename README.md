@@ -2,21 +2,27 @@
 
 Computer System Security 
 
-If you do not have the access rights needed to run the converter tool, you might want to run the rights.sh script:
+Group members:
+Clément Caroff, Jacques-Antoine Portal, Tanguy Snoeck.
+
+## Executing our code:
+(The code was written entirely on Linux systems)
+
+If you do not have the <b>access rights</b> needed to run the converter tool, you might want to run the rights.sh script:
 
     sudo bash rights.sh
 
 
-If this still does not fix the problem, you might want to use the converter_static rather than the simple converter
+If this still does not fix the problem, you might want to use the <b>converter_static</b> rather than the simple converter.<br>
 Change the python fuzzer file to use the following line:
 
     pipes = subprocess.Popen(['../converter_static', image, 'outputImage'], stderr=subprocess.PIPE)
 
-Rather than:
-For the mutation fuzzer: line 58
-For the generation based fuzzer: line 169
+Rather than:<br>
+For the mutation fuzzer: line 58<br>
+For the generation based fuzzer: line 169<br>
 
-To run the mutation fuzzer, open a terminal window from the mutation folder and use one of the following command:
+To run the <b>mutation fuzzer</b>, open a terminal window from the mutation folder and use one of the following commands:
 
     python3 mutation.py [inputFile] [nbOfTestRuns] [nbOfModifications] [percentageOfBytesToModify]
 
@@ -24,20 +30,20 @@ To run the mutation fuzzer, open a terminal window from the mutation folder and 
 
 You can play with the arguments to see which ones work best and generate files that crash the converter.
 
-To run the generation fuzzer, open a terminal window from the generation folder and use one of the following command: 
+To run the <b>generation fuzzer</b>, open a terminal window from the generation folder and use one of the following commands:
 
     python3 generation.py [number of files generated]
 
     python generation.py [number of files generated]
 
-When running the fuzzer with 1000 as the number of files generated, I manage to consistently obtain 4 different errors.
+## Crash:
 
-The first error that was found when making the fuzzer was when the version number was between 20 and 29 (in base 10). To find such a file in the generationCrash
-directory, you can search for "v2" and you should find at least a few .img files that start with v20 or v21, or v22 ... v29. At first we though of using numbers higher than 100, however this did not make the tool crash.
+When running the fuzzer with 1000 as the number of files generated, we manage to consistently obtain 4 different errors.
 
-The second error was found much later when making the fuzzer, it involves the author name, and basically, some times, when making a file that does not finish the author name 
-by a 00 (hex), and the file not having any 00 soon after, the converter seems to crash with an "xxx stack smashing detected xxx: ../converter terminated" error.
-Sometimes, this error gets even worse and prints a lot more information:
+The first error that was found when making the fuzzer was when the version number was between 20 and 29 (in base 10). To find such a file in the generationCrash directory, you can search for "v2" and you should find at least a few .img files that start with v20 or v21, or v22 ... v29. At first, we thought of using numbers higher than 100, however this did not make the tool crash.
+
+The second error was found much later when making the fuzzer, it involves the author name, and basically, sometimes, when making a file that does not finish the author name by a 00 (hex), and the file not having any 00 soon after, the converter seems to crash with an "xxx stack smashing detected xxx: ../converter terminated" error. Sometimes, this error gets even worse and prints a lot more information:
+
 
 ```
 * stack smashing detected *: ../converter terminated
@@ -76,27 +82,18 @@ ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsysca
 ```
 (to find the files that crashed because of this, search for true in the generationCrash folder).
 
-We discovered the following crashes by the fuzzer generating author names that contained 00, hence shifting what the tool considered the width, height and number of colors.
+We discovered the following crashes by the fuzzer generating author names that contained 00, hence shifting what the tool considered the width, height and number of colours.
 
-The thrid kind of crashing files found was when the heihgt of an image (the one in the parameters, not the real height of the file) is (in base 10) larger than aproximately  2100000000.
-This might be due to the fact that positive 32 bits values stop at 2147483647, and higher values are interpreted as negative values, which makes the converter tool crash.
-(to find these files, search for ones with a large number after _l in the file name)
+The third kind of crashing files found was when the height of an image (the one in the parameters, not the real height of the file) is (in base 10) larger than approximately 2100000000. This might be due to the fact that positive 32 bits values stop at 2147483647, and higher values are interpreted as negative values, which makes the converter tool crash. (to find these files, search for ones with a large number after _l in the file name)
 
-Using negative values as the number of colours also crashes the converter (which is the fourth kind of crash we found). At first we though of using a numer of colours higher than 256, however that was handled by the tool.
-(to find these files, search for ones with a large number after _nc in the file name)
+Using negative values as the number of colours also crashes the converter (which is the fourth kind of crash we found). At first, we thought of using a number of colours higher than 256, however that was handled by the tool. (to find these files, search for ones with a large number after _nc in the file name)
 
 We have provided 4 example files in the example file zip folder, one for each of the crashes we found.
 
-The last / fith possible problem...
+## The last / fifth possible problem...
 
-It seemed that using a "small length" and a negative number of colours, or the opposit was the way to produce the most crashing files. Using negative numbers for both seems to reduce the number of crashing files generated. This might be a clue to finding a 5th way of crashing the converter. However, we could not build a fuzzer that would consistently produce such kind of crashes.
+It seemed that using a "small length" and a negative number of colours, or the opposite was the way to produce the most crashing files. Using negative numbers for both seems to reduce the number of crashing files generated. This might be a clue to finding a 5th way of crashing the converter. However, we could not build a fuzzer that would consistently produce such kind of crashes.
 
-Finally we noticed that the only parameter that seems not to cause some crashes was the width. This is suspicious but we could not find consistant crashes with the width. This would be another clue to find a 5th crash.
+Finally, we noticed that the only parameter that seems not to cause some crashes was the width. This is suspicious but we could not find consistent crashes with the width. This would be another clue to find a 5th crash.
 
-Our generation fuzzer tests for a few more possible problems but none seems to cause any crash. We test for unmatching length, width and number of colours, we try to use colours that are not 32 bit values, that did nothing, and tried using negative widths and it did nothing either.
-
-
-
-
-
-
+Our generation fuzzer tests for a few more possible problems but none seems to cause any crash. We test for non-matching length, width and number of colours, we try to use colours that are not 32 bit values, that did nothing, and tried using negative widths and it did nothing either.

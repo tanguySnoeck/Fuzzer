@@ -85,7 +85,7 @@ This might be due to the fact that positive 32 bits values stop at 2147483647, a
 Using negative values as the number of colours also crashes the converter (which is the fourth kind of crash we found). At first we though of using a numer of colours higher than 256, however that was handled by the tool.
 (to find these files, search for ones with a large number after _nc in the file name)
 
-We have provided 4 example files in the example files folder, one for each of the crashes we found.
+We have provided 4 example files in the example file zip folder, one for each of the crashes we found.
 
 The last / fith possible problem...
 

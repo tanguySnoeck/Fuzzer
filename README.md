@@ -80,8 +80,12 @@ We discovered the following crashes by the fuzzer generating author names that c
 
 The thrid kind of crashing files found was when the heihgt of an image (the one in the parameters, not the real height of the file) is (in base 10) larger than aproximately  2100000000.
 This might be due to the fact that positive 32 bits values stop at 2147483647, and higher values are interpreted as negative values, which makes the converter tool crash.
+(to find these files, search for ones with a large number after _l in the file name)
 
 Using negative values as the number of colours also crashes the converter (which is the fourth kind of crash we found). At first we though of using a numer of colours higher than 256, however that was handled by the tool.
+(to find these files, search for ones with a large number after _nc in the file name)
+
+We have provided 4 example files in the example files folder, one for each of the crashes we found.
 
 The last / fith possible problem...
 

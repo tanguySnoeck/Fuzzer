@@ -150,7 +150,7 @@ def chooseRandomColour(numOfColour):
     allColours = []
     if (numOfColour >= 0):
         for n in range(numOfColour):
-            allColours += [randint(0, 2147483647)]
+            allColours += [randint(0, 2500000000)]
     return allColours
 
 

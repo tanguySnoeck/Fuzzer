@@ -1,6 +1,7 @@
 # LINGI2347GroupWork1
 
 Computer System Security 
+This project was made to detect what input files crash the program 'converter' that was given to us.
 
 Group members:
 Clément Caroff, Jacques-Antoine Portal, Tanguy Snoeck.

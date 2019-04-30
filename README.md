@@ -24,9 +24,9 @@ For the generation based fuzzer: line 169<br>
 
 To run the <b>mutation fuzzer</b>, open a terminal window from the mutation folder and use one of the following commands:
 
-    python3 mutation.py [inputFile] [nbOfTestRuns] [nbOfModifications] [percentageOfBytesToModify]
+    ./mutation.py [inputFile] [nbOfTestRuns] [nbOfModifications] [percentageOfBytesToModify]
 
-    python mutation.py [inputFile] [nbOfTestRuns] [nbOfModifications] [percentageOfBytesToModify]
+    ./mutation.py [inputFile] [nbOfTestRuns] [nbOfModifications] [percentageOfBytesToModify]
 
 You can play with the arguments to see which ones work best and generate files that crash the converter.
 
